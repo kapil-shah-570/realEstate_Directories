@@ -1,0 +1,530 @@
+/* Neighborhood Spotlight Variables */
+:root {
+  --ns-bg: #ffffff;
+  --ns-card-bg: #ffffff;
+  --ns-accent: #3a86ff;
+  --ns-accent-light: #64ffda;
+  --ns-text: #1e293b;
+  --ns-text-light: #64748b;
+  --ns-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+/* Neighborhood Spotlight Base */
+.neighborhood-spotlight {
+  padding: 6rem 0;
+  background: var(--ns-bg);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section Header */
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--ns-text);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--ns-accent), var(--ns-accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  color: var(--ns-text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Neighborhood Selector */
+.neighborhood-selector {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+.neighborhood-tab {
+  flex: 1;
+  min-width: 250px;
+  background: #f8fafc;
+  border: 2px solid transparent;
+  border-radius: 15px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.neighborhood-tab:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+.neighborhood-tab.active {
+  background: var(--ns-accent);
+  color: white;
+  border-color: var(--ns-accent);
+}
+
+.tab-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.neighborhood-tab.active .tab-icon {
+  color: white;
+}
+
+.tab-content {
+  flex: 1;
+  text-align: left;
+}
+
+.tab-content h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.tab-content p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.neighborhood-tab.active .tab-content p {
+  opacity: 0.9;
+}
+
+.tab-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ns-accent);
+}
+
+.neighborhood-tab.active .tab-price {
+  color: white;
+}
+
+/* Main Content */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Neighborhood Card */
+.neighborhood-card {
+  grid-column: span 1;
+  background: var(--ns-card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--ns-shadow);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.card-image {
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
+}
+
+.card-badge {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--ns-accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.card-content {
+  padding: 2rem;
+}
+
+.card-header {
+  margin-bottom: 1.5rem;
+}
+
+.card-header h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ns-text);
+  margin-bottom: 0.5rem;
+}
+
+.location {
+  color: var(--ns-text-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.description {
+  color: var(--ns-text-light);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Feature Scores */
+.feature-scores {
+  margin-bottom: 2rem;
+}
+
+.feature-score {
+  margin-bottom: 1rem;
+}
+
+.feature-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--ns-text);
+}
+
+.score-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.score-value {
+  position: absolute;
+  right: 0;
+  top: -25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ns-accent);
+}
+
+/* Highlights */
+.highlights h4 {
+  font-size: 1.2rem;
+  color: var(--ns-text);
+  margin-bottom: 1rem;
+}
+
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  color: var(--ns-text);
+  font-size: 0.9rem;
+}
+
+.highlight-icon {
+  font-size: 1.2rem;
+}
+
+/* Interactive Map */
+.interactive-map {
+  grid-column: span 1;
+  position: relative;
+  height: 500px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.map-popup {
+  padding: 1rem;
+  min-width: 200px;
+}
+
+.map-popup h4 {
+  margin-bottom: 0.5rem;
+  color: var(--ns-accent);
+}
+
+.map-popup button {
+  width: 100%;
+  padding: 0.5rem;
+  background: var(--ns-accent);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.legend-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-icon.safety {
+  background: #3a86ff;
+}
+
+.legend-icon.schools {
+  background: #64ffda;
+}
+
+.legend-icon.amenities {
+  background: #ff6b6b;
+}
+
+/* Market Stats */
+.market-stats {
+  grid-column: span 2;
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.stats-title {
+  font-size: 1.5rem;
+  color: var(--ns-text);
+  margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ns-accent);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: var(--ns-text-light);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.trend-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.trend-label {
+  font-weight: 600;
+  color: var(--ns-text);
+}
+
+.trend-value {
+  font-weight: 700;
+}
+
+.trend-value.positive {
+  color: #10b981;
+}
+
+/* Comparison Table */
+.comparison-table {
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.table-title {
+  font-size: 1.5rem;
+  color: var(--ns-text);
+  margin-bottom: 1.5rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+thead {
+  background: var(--ns-accent);
+  color: white;
+}
+
+th {
+  padding: 1.2rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+  background: #f1f5f9;
+}
+
+tbody tr.active {
+  background: rgba(58, 134, 255, 0.1);
+}
+
+td {
+  padding: 1.2rem;
+  color: var(--ns-text);
+}
+
+.score-display {
+  padding: 0.3rem 0.8rem;
+  background: #e2e8f0;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .interactive-map {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2.5rem;
+  }
+  
+  .neighborhood-selector {
+    flex-direction: column;
+  }
+  
+  .highlight-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  table {
+    font-size: 0.9rem;
+  }
+  
+  th, td {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-item {
+    padding: 1rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .comparison-table {
+    padding: 1rem;
+  }
+}

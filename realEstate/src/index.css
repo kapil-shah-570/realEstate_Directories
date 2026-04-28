@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Range input thumb styling – matches original design */
+  .range-thumb {
+    @apply appearance-none w-4 h-4 bg-[#3a86ff] rounded-full cursor-pointer;
+  }
+  .range-thumb::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 bg-[#3a86ff] rounded-full cursor-pointer;
+  }
+  .range-thumb::-moz-range-thumb {
+    @apply w-4 h-4 bg-[#3a86ff] rounded-full cursor-pointer border-0;
+  }
+}

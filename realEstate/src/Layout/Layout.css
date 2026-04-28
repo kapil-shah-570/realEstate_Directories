@@ -1,0 +1,23 @@
+/* components/Global/Layout/Layout.css */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-main {
+  flex: 1;
+  /* Navbar height + any desired spacing */
+  padding-top: 80px; /* Adjust based on your navbar height */
+}
+
+/* Ensure navbar is fixed and doesn't cover content */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: white; /* Or your navbar background */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
