@@ -127,6 +127,7 @@ import DashboardReportsPage from './Pages/dashboard/DashboardReportsPage';
 import DashboardBlogsPage from './Pages/dashboard/DashboardBlogsPage';
 import DashboardAgentsPage from './Pages/dashboard/DashboardAgentsPage';
 import DashboardContactsPage from './Pages/dashboard/DashboardContactsPage';
+import DashboardCommentsPage from './Pages/dashboard/DashboardCommentsPage';
 import DashboardCallsPage from './Pages/dashboard/DashboardCallsPage';
 import DashboardMessagesPage from './Pages/dashboard/DashboardMessagesPage';
 import DashboardSettingsPage from './Pages/dashboard/DashboardSettingsPage';
@@ -134,11 +135,13 @@ import DashboardSettingsPage from './Pages/dashboard/DashboardSettingsPage';
 import ForgotPasswordPage from './Pages/ForgotPasswordPage';
 import BlogPage from './Pages/BlogPage';
 import BlogPost from './Pages/BlogPost';
+import SearchResultsPage from './Pages/SearchResultsPage';
 import FeaturedPropertyDetail from './Pages/FeaturedPropertyDetail';
 import ProductDetailPage from './Pages/ProductDetailPage';
 import ClientStoryPage from './Pages/ClientStoryPage';
 import ListingDetailPage from './Pages/ListingDetailPage';
 import ListingsPage from './Pages/ListingsPage';
+import SpecialistDetailPage from './Pages/SpecialistDetailPage';
 import GoogleAuth from './components/auth/GoogleAuth';
 import FacebookAuth from './components/auth/FacebookAuth';
 import GitHubAuth from './components/auth/GitHubAuth';
@@ -180,7 +183,9 @@ function App() {
               <Route path="products/:id" element={<ProductDetailPage />} />
               <Route path="featured/:id" element={<FeaturedPropertyDetail />} />
               <Route path="blog" element={<BlogPage />} />
-              <Route path="blog/:id" element={<BlogPost />} />
+              <Route path="blog/:slug" element={<BlogPost />} />
+              <Route path="search" element={<SearchResultsPage />} />
+              <Route path="specialist/:slug" element={<SpecialistDetailPage />} />
             </Route>
 
             {/* Auth Routes (outside dashboard) */}
@@ -196,6 +201,7 @@ function App() {
               <Route path="listings" element={<DashboardListingsPage />} />
               <Route path="add-property" element={<DashboardAddPropertyPage />} />
               <Route path="likes" element={<DashboardLikesPage />} />
+              <Route path="comments" element={<DashboardCommentsPage />} />
               <Route path="reports" element={<DashboardReportsPage />} />
               <Route path="blogs" element={<DashboardBlogsPage />} />
               <Route path="agents" element={<DashboardAgentsPage />} />

@@ -30,6 +30,10 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const propertyRoutes = require('./routes/properties');
+const blogRoutes = require('./routes/blogs');
+const contactRoutes = require('./routes/contacts');
+const specialistRoutes = require('./routes/specialists');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -47,6 +51,10 @@ mongoose.connect('mongodb://localhost:27017/realestate')
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/contacts', contactRoutes);
+app.use('/api/specialists', specialistRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

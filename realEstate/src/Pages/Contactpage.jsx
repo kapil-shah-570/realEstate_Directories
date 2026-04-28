@@ -32,7 +32,7 @@ const ContactPage = () => {
                 activeDepartment={activeDepartment}
                 setActiveDepartment={setActiveDepartment}
               />
-              <ContactForm />
+              <ContactForm department={activeDepartment} />
             </div>
             <div className="h-full min-h-[500px]">
               <MapSection />

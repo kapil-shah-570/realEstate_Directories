@@ -1,164 +1,154 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPaperPlane, FaPaperclip } from 'react-icons/fa';
-import './ContactForm.css';
+import { FaPaperPlane, FaPhoneAlt, FaEnvelope, FaRegClock, FaUserAlt } from 'react-icons/fa';
 
-const ContactForm = () => {
+const ContactForm = ({ department = 'buyer' }) => {
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', subject: '', message: '', preferredTime: '', file: null
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+    preferredTime: '',
   });
-  const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState({ loading: false, success: '', error: '' });
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === 'file') {
-      setFormData({ ...formData, file: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-    if (errors[name]) setErrors({ ...errors, [name]: '' });
-  };
+  const handleChange = (e) => setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const validate = () => {
-    const err = {};
-    if (!formData.name.trim()) err.name = 'Name is required';
-    if (!formData.email.trim()) err.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) err.email = 'Email is invalid';
-    if (!formData.phone.trim()) err.phone = 'Phone is required';
-    if (!formData.message.trim()) err.message = 'Message is required';
-    return err;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const err = validate();
-    setErrors(err);
-    if (Object.keys(err).length === 0) {
-      setIsSubmitting(true);
-      // Simulate API call
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setSubmitted(true);
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '', preferredTime: '', file: null });
-        setTimeout(() => setSubmitted(false), 5000);
-      }, 1500);
+    setStatus({ loading: true, success: '', error: '' });
+    try {
+      const response = await fetch('http://localhost:8000/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, department }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to save contact request');
+      setStatus({ loading: false, success: 'Thank you! Our team will contact you soon.', error: '' });
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '', preferredTime: '' });
+    } catch (error) {
+      setStatus({ loading: false, success: '', error: error.message });
     }
   };
 
   return (
-    <div className="contact-form-container">
-      <h2 className="section-title">Send us a message</h2>
-      <p className="section-subtitle">Select your reason and fill the form</p>
+    <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] md:p-8">
+      <div className="mb-8 flex flex-col gap-3">
+        <span className="inline-flex w-fit items-center gap-2 rounded-full bg-cyan-100 px-4 py-1 text-xs font-bold uppercase tracking-[0.28em] text-cyan-800">
+          Send Us A Message
+        </span>
+        <h2 className="text-3xl font-black text-slate-950 md:text-4xl">Tell us what you’re looking for</h2>
+        <p className="max-w-2xl text-slate-600">
+          Share your goals, timeline, and preferred contact details. Your message is stored in the dashboard and shown in the contact inbox.
+        </p>
+      </div>
+
+      <div className="mb-8 grid gap-4 md:grid-cols-3">
+        <div className="rounded-3xl bg-slate-50 p-4">
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-700">
+            <FaPhoneAlt />
+          </div>
+          <p className="text-sm font-semibold text-slate-950">Fast Call Back</p>
+          <p className="text-sm text-slate-500">We usually reply within 24 hours.</p>
+        </div>
+        <div className="rounded-3xl bg-slate-50 p-4">
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-700">
+            <FaEnvelope />
+          </div>
+          <p className="text-sm font-semibold text-slate-950">Email Follow Up</p>
+          <p className="text-sm text-slate-500">Your inquiry goes straight to our inbox.</p>
+        </div>
+        <div className="rounded-3xl bg-slate-50 p-4">
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-700">
+            <FaRegClock />
+          </div>
+          <p className="text-sm font-semibold text-slate-950">Flexible Timing</p>
+          <p className="text-sm text-slate-500">Choose a time that works best for you.</p>
+        </div>
+      </div>
 
       <AnimatePresence>
-        {submitted && (
-          <motion.div
-            className="success-message"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <FaPaperPlane /> Thank you! We'll get back to you soon.
+        {status.success && (
+          <motion.div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {status.success}
+          </motion.div>
+        )}
+        {status.error && (
+          <motion.div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {status.error}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <form onSubmit={handleSubmit} className="contact-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label>Full Name *</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={errors.name ? 'error' : ''}
-              placeholder="John Doe"
-              disabled={isSubmitting}
-            />
-            {errors.name && <span className="error-text">{errors.name}</span>}
-          </div>
-          <div className="form-group">
-            <label>Email *</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={errors.email ? 'error' : ''}
-              placeholder="john@example.com"
-              disabled={isSubmitting}
-            />
-            {errors.email && <span className="error-text">{errors.email}</span>}
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label>Phone *</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className={errors.phone ? 'error' : ''}
-              placeholder="+1 555 123 4567"
-              disabled={isSubmitting}
-            />
-            {errors.phone && <span className="error-text">{errors.phone}</span>}
-          </div>
-          <div className="form-group">
-            <label>Subject</label>
-            <input
-              type="text"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              placeholder="e.g., Schedule a viewing"
-              disabled={isSubmitting}
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Message *</label>
-          <textarea
-            name="message"
-            rows="5"
-            value={formData.message}
-            onChange={handleChange}
-            className={errors.message ? 'error' : ''}
-            placeholder="Tell us about your needs..."
-            disabled={isSubmitting}
-          />
-          {errors.message && <span className="error-text">{errors.message}</span>}
-        </div>
-
-        <div className="form-row">
-          <div className="form-group file-upload">
-            <label>Attachments (optional)</label>
-            <div className="file-input">
-              <input type="file" name="file" id="file" onChange={handleChange} disabled={isSubmitting} />
-              <label htmlFor="file" className="file-label">
-                <FaPaperclip /> {formData.file ? formData.file.name : 'Choose file'}
-              </label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid gap-5 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Full Name *</label>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-cyan-400">
+              <FaUserAlt className="text-slate-400" />
+              <input name="name" value={formData.name} onChange={handleChange} required className="w-full bg-transparent outline-none" placeholder="Your full name" />
             </div>
           </div>
-          <div className="form-group">
-            <label>Preferred contact time</label>
-            <select name="preferredTime" value={formData.preferredTime} onChange={handleChange} disabled={isSubmitting}>
-              <option value="">Any time</option>
-              <option value="morning">Morning (9am‑12pm)</option>
-              <option value="afternoon">Afternoon (12pm‑5pm)</option>
-              <option value="evening">Evening (5pm‑8pm)</option>
-            </select>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Email *</label>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-cyan-400">
+              <FaEnvelope className="text-slate-400" />
+              <input name="email" type="email" value={formData.email} onChange={handleChange} required className="w-full bg-transparent outline-none" placeholder="name@example.com" />
+            </div>
           </div>
         </div>
 
-        <button type="submit" className="submit-btn" disabled={isSubmitting}>
-          {isSubmitting ? <span className="spinner"></span> : <><FaPaperPlane /> Send Message</>}
+        <div className="grid gap-5 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Phone *</label>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-cyan-400">
+              <FaPhoneAlt className="text-slate-400" />
+              <input name="phone" value={formData.phone} onChange={handleChange} required className="w-full bg-transparent outline-none" placeholder="+1 555 123 4567" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Subject</label>
+            <input name="subject" value={formData.subject} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-cyan-400" placeholder="How can we help?" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-slate-700">Message *</label>
+          <textarea
+            name="message"
+            rows="6"
+            value={formData.message}
+            onChange={handleChange}
+            required
+            className="w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-cyan-400"
+            placeholder="Tell us about the property, your timeline, and the support you need..."
+          />
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Preferred contact time</label>
+            <select name="preferredTime" value={formData.preferredTime} onChange={handleChange} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-cyan-400">
+              <option value="">Any time</option>
+              <option value="morning">Morning (9am-12pm)</option>
+              <option value="afternoon">Afternoon (12pm-5pm)</option>
+              <option value="evening">Evening (5pm-8pm)</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Department</label>
+            <input value={department} disabled className="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-slate-500" />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 font-semibold text-white shadow-lg shadow-cyan-500/20 transition hover:scale-[1.01] disabled:opacity-60"
+          disabled={status.loading}
+        >
+          <FaPaperPlane /> {status.loading ? 'Sending...' : 'Send Message'}
         </button>
       </form>
     </div>

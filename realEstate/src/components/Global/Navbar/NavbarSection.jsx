@@ -369,14 +369,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const NavbarSection = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeHover, setActiveHover] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   const navbarRef = useRef(null);
 
   const menuItems = [
@@ -384,6 +386,7 @@ const NavbarSection = () => {
     { name: 'About', path: '/about' },
     { name: 'Services', path: '/services' },
     { name: 'Products', path: '/products' },
+    { name: 'Blogs', path: '/blog' },
     { name: 'Clients', path: '/clients' },
     { name: 'Contact', path: '/contact' }
   ];
@@ -415,6 +418,14 @@ const NavbarSection = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const value = searchTerm.trim();
+    if (!value) return;
+    navigate(`/search?q=${encodeURIComponent(value)}`);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -455,6 +466,18 @@ const NavbarSection = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
+            <form onSubmit={handleSearchSubmit} className="hidden lg:block">
+              <div className="flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-md">
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search blogs or properties..."
+                  className="w-64 bg-transparent text-sm text-white placeholder:text-white/55 outline-none"
+                />
+              </div>
+            </form>
+
             <div className="flex gap-10">
               {menuItems.map((item, index) => (
                 <div
@@ -555,6 +578,16 @@ const NavbarSection = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <div className="relative h-full p-6 flex flex-col justify-center items-center">
+                <form onSubmit={handleSearchSubmit} className="w-full max-w-[300px] z-[1] mb-8">
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search blogs or properties..."
+                    className="w-full rounded-[12px] border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-white/50 outline-none"
+                  />
+                </form>
+
                 <div className="flex flex-col gap-8 w-full max-w-[300px] z-[1]">
                   {menuItems.map((item, index) => (
                     <motion.div

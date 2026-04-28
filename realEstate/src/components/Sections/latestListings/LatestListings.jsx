@@ -28,7 +28,7 @@ const LatestListings = () => {
       const response = await fetch('http://localhost:8000/api/properties');
       if (!response.ok) throw new Error('Failed to fetch properties');
       const data = await response.json();
-      setProperties(data.slice(0, 6)); // Show latest 6 properties
+      setProperties(data.slice(0, 6));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -40,6 +40,21 @@ const LatestListings = () => {
     setFavorites(prev =>
       prev.includes(id) ? prev.filter(fav => fav !== id) : [...prev, id]
     );
+  };
+
+  const likeProperty = async (propertyId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/properties/${propertyId}/like`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to like property');
+      setProperties((prev) =>
+        prev.map((item) => (item._id === propertyId ? { ...item, likesCount: data.likesCount } : item))
+      );
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleCardClick = (property) => {
@@ -66,7 +81,7 @@ const LatestListings = () => {
           {properties.map((property, index) => (
             <motion.div
               key={property._id}
-              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 border border-slate-100"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -85,26 +100,39 @@ const LatestListings = () => {
                     <span className="text-gray-400 text-4xl">🏠</span>
                   </div>
                 )}
-                <div className="absolute top-4 right-4 bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  {property.status}
+                <div className="absolute top-4 right-4 bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                  {property.status || 'draft'}
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(property._id);
-                  }}
-                  className="absolute top-4 left-4 p-2 bg-white/80 rounded-full hover:bg-white transition"
-                >
-                  <FaHeart className={`text-lg ${favorites.includes(property._id) ? 'text-red-500' : 'text-gray-400'}`} />
-                </button>
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(property._id);
+                    }}
+                    className="p-2 bg-white/80 rounded-full hover:bg-white transition"
+                    title="Save"
+                  >
+                    <FaHeart className={`text-lg ${favorites.includes(property._id) ? 'text-red-500' : 'text-gray-400'}`} />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      likeProperty(property._id);
+                    }}
+                    className="rounded-full bg-slate-950/80 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-950 transition"
+                    title="Like this property"
+                  >
+                    Like {property.likesCount || 0}
+                  </button>
+                </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{property.title}</h3>
-                <p className="text-gray-600 mb-3 flex items-center gap-1">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{property.title}</h3>
+                <p className="text-gray-600 mb-3 flex items-center gap-1 line-clamp-1">
                   <FaMapMarkerAlt /> {property.location}
                 </p>
                 <p className="text-2xl font-bold text-cyan-600 mb-4">{property.price}</p>
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                <div className="grid grid-cols-3 gap-2 text-sm text-gray-600 mb-4">
                   <span className="flex items-center gap-1">
                     <FaBed /> {property.bedrooms} Beds
                   </span>
@@ -115,7 +143,7 @@ const LatestListings = () => {
                     <FaRulerCombined /> {property.sqft} sqft
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex flex-wrap gap-1">
                     {property.features && property.features.slice(0, 2).map((feature, idx) => (
                       <span key={idx} className="bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full text-xs">
@@ -123,8 +151,12 @@ const LatestListings = () => {
                       </span>
                     ))}
                   </div>
-                  <FaArrowRight className="text-cyan-600" />
+                  <FaArrowRight className="text-cyan-600 shrink-0" />
                 </div>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                  {property.likesCount || 0} likes
+                  {Array.isArray(property.comments) ? ` · ${property.comments.length} comments` : ''}
+                </p>
               </div>
             </motion.div>
           ))}

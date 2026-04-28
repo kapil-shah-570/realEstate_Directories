@@ -31,16 +31,33 @@ const upload = multer({
 // ---------- Create Property ----------
 router.post('/', upload.array('images', 15), async (req, res) => {
   try {
-    const formData = req.body;
+    const formData = { ...req.body };
 
     if (typeof formData.features === 'string') {
-      formData.features = JSON.parse(formData.features);
+      try {
+        formData.features = JSON.parse(formData.features);
+      } catch (parseError) {
+        formData.features = [];
+      }
     }
 
-    const imagePaths = req.files.map(file => `/uploads/properties/${file.filename}`);
+    const imagePaths = Array.isArray(req.files)
+      ? req.files.map(file => `/uploads/properties/${file.filename}`)
+      : [];
+
+    const toNumber = (value) => {
+      if (value === '' || value === undefined || value === null) return undefined;
+      const number = Number(value);
+      return Number.isNaN(number) ? undefined : number;
+    };
 
     const property = new Property({
       ...formData,
+      bedrooms: toNumber(formData.bedrooms),
+      bathrooms: toNumber(formData.bathrooms),
+      yearBuilt: toNumber(formData.yearBuilt),
+      latitude: toNumber(formData.latitude),
+      longitude: toNumber(formData.longitude),
       images: imagePaths,
     });
 
@@ -71,6 +88,58 @@ router.get('/:id', async (req, res) => {
     }
     res.json(property);
   } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const property = await Property.findByIdAndDelete(req.params.id);
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+    res.json({ message: 'Property deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.post('/:id/like', async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    property.likesCount = (property.likesCount || 0) + 1;
+    await property.save();
+    res.json({ message: 'Property liked', likesCount: property.likesCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.post('/:id/comments', async (req, res) => {
+  try {
+    const { name, message } = req.body;
+    if (!name || !message) {
+      return res.status(400).json({ message: 'Name and message are required' });
+    }
+
+    const property = await Property.findById(req.params.id);
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    property.comments = property.comments || [];
+    property.comments.unshift({ name, message });
+    await property.save();
+
+    res.status(201).json({ message: 'Comment added', comments: property.comments });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 });

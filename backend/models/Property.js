@@ -40,6 +40,14 @@ const propertySchema = new mongoose.Schema({
   features: [{ type: String }],
   whyChoose: { type: String },
 
+  // Social
+  likesCount: { type: Number, default: 0 },
+  comments: [{
+    name: { type: String, required: true },
+    message: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+  }],
+
   // Agent
   agentName: { type: String },
   agentPhone: { type: String },

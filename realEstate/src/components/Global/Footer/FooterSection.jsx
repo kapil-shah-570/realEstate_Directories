@@ -62,6 +62,8 @@ const FooterSection = () => {
     { name: 'About Us', path: '/about' },
     { name: 'Services', path: '/services' },
     { name: 'Properties', path: '/products' },
+    { name: 'Listings', path: '/listings' },
+    { name: 'Blogs', path: '/blog' },
     { name: 'Our Clients', path: '/clients' },
     { name: 'Contact Us', path: '/contact' },
   ];
@@ -73,6 +75,15 @@ const FooterSection = () => {
     { name: 'Investment Consulting', path: '/services#investment' },
     { name: 'Legal Assistance', path: '/services#legal' },
     { name: 'Home Staging', path: '/services#staging' },
+  ];
+
+  const supportLinks = [
+    { name: 'Dashboard Login', path: '/login' },
+    { name: 'Dashboard Comments', path: '/dashboard/comments' },
+    { name: 'Dashboard Blogs', path: '/dashboard/blogs' },
+    { name: 'Dashboard Agents', path: '/dashboard/agents' },
+    { name: 'Privacy Policy', path: '/privacy-policy' },
+    { name: 'Terms of Service', path: '/terms-of-service' },
   ];
 
   const contactInfo = [
@@ -171,6 +182,25 @@ const FooterSection = () => {
                     <Link to={service.path} className="footer-link">
                       <FaArrowRight className="link-arrow" />
                       {service.name}
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Support */}
+            <motion.div className="footer-column quick-links" variants={itemVariants}>
+              <h3 className="footer-title">Support</h3>
+              <ul className="footer-menu">
+                {supportLinks.map((link, index) => (
+                  <motion.li
+                    key={index}
+                    whileHover={{ x: 10 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Link to={link.path} className="footer-link">
+                      <FaArrowRight className="link-arrow" />
+                      {link.name}
                     </Link>
                   </motion.li>
                 ))}

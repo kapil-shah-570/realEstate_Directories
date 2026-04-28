@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaBed, FaBath, FaMapMarkerAlt, FaRulerCombined } from 'react-icons/fa';
+import { FaBed, FaBath, FaMapMarkerAlt, FaRulerCombined, FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const ListingsPage = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +28,21 @@ const ListingsPage = () => {
 
   const handleCardClick = (property) => {
     navigate(`/listing/${property._id}`);
+  };
+
+  const likeProperty = async (propertyId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/properties/${propertyId}/like`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to like property');
+      setProperties((prev) =>
+        prev.map((item) => (item._id === propertyId ? { ...item, likesCount: data.likesCount } : item))
+      );
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -58,6 +74,16 @@ const ListingsPage = () => {
                 <div className="absolute top-4 right-4 bg-cyan-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                   {property.status}
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    likeProperty(property._id);
+                  }}
+                  className="absolute top-4 left-4 rounded-full bg-white/90 p-2 shadow-sm hover:bg-white"
+                  title="Like"
+                >
+                  <FaHeart className={`text-sm ${favorites.includes(property._id) ? 'text-red-500' : 'text-gray-400'}`} />
+                </button>
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{property.title}</h3>
@@ -79,6 +105,10 @@ const ListingsPage = () => {
                 <div className="mt-4">
                   <p className="text-gray-700 text-sm line-clamp-2">{property.description}</p>
                 </div>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                  {property.likesCount || 0} likes
+                  {Array.isArray(property.comments) ? ` · ${property.comments.length} comments` : ''}
+                </p>
               </div>
             </div>
           ))}
