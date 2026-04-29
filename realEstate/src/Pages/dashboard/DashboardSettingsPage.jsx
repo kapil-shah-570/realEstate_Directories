@@ -5,7 +5,9 @@ import DashboardSectionPage from '../../components/Dashboard/DashboardSectionPag
 export default function DashboardSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
   const [form, setForm] = useState({
     profileName: 'Admin User',
     username: 'admin',
@@ -27,6 +29,12 @@ export default function DashboardSettingsPage() {
     phoneVisibility: false,
     allowMarketingEmails: true,
     allowContactMessages: true,
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    email: 'admin@estatepro.com',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   useEffect(() => {
@@ -57,6 +65,10 @@ export default function DashboardSettingsPage() {
             allowMarketingEmails: Boolean(data.allowMarketingEmails),
             allowContactMessages: Boolean(data.allowContactMessages),
           });
+          setPasswordForm((prev) => ({
+            ...prev,
+            email: data.email || prev.email,
+          }));
         }
       } finally {
         setLoading(false);
@@ -92,13 +104,45 @@ export default function DashboardSettingsPage() {
     }
   };
 
+  const handlePasswordChange = (event) => {
+    const { name, value } = event.target;
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = async (event) => {
+    event.preventDefault();
+    setPasswordSaving(true);
+    setPasswordMessage('');
+
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(passwordForm),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to change password');
+      setPasswordMessage('Password changed successfully.');
+      setPasswordForm((prev) => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      }));
+    } catch (error) {
+      setPasswordMessage(error.message);
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
+
   return (
     <DashboardSectionPage
       title="Settings"
       subtitle="Control branding, alerts, dashboard behavior, and support details from one place."
     >
-      <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3">
             <FaCog className="text-cyan-600" />
             <h3 className="text-xl font-bold text-slate-950">General Settings</h3>
@@ -137,14 +181,21 @@ export default function DashboardSettingsPage() {
                 <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
                   <FaPalette className="text-cyan-600" /> Site Branding
                 </p>
-              <input name="siteName" value={form.siteName} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Site name" />
-              <input name="dashboardName" value={form.dashboardName} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Dashboard name" />
-              <input name="supportEmail" value={form.supportEmail} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Support email" />
-              <input name="supportPhone" value={form.supportPhone} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Support phone" />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <input name="siteName" value={form.siteName} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Site name" />
+                  <input name="dashboardName" value={form.dashboardName} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Dashboard name" />
+                  <input name="supportEmail" value={form.supportEmail} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Support email" />
+                  <input name="supportPhone" value={form.supportPhone} onChange={handleChange} className="rounded-2xl border border-slate-200 px-4 py-3" placeholder="Support phone" />
+                </div>
               </div>
             </div>
           )}
-        </div>
+
+          <button type="submit" disabled={saving || loading} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800 disabled:opacity-60">
+            <FaSave />
+            {saving ? 'Saving...' : 'Save Settings'}
+          </button>
+        </form>
 
         <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3">
@@ -192,13 +243,60 @@ export default function DashboardSettingsPage() {
             <span className="flex items-center gap-2 font-medium text-slate-900"><FaSearch className="text-cyan-600" /> Contact Messages</span>
             <input type="checkbox" name="allowContactMessages" checked={form.allowContactMessages} onChange={handleChange} />
           </label>
-
-          <button type="submit" disabled={saving || loading} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800 disabled:opacity-60">
-            <FaSave />
-            {saving ? 'Saving...' : 'Save Settings'}
-          </button>
         </div>
-      </form>
+
+        <form onSubmit={handlePasswordSubmit} className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+          <div className="flex items-center gap-3">
+            <FaLock className="text-cyan-600" />
+            <h3 className="text-xl font-bold text-slate-950">Change Password</h3>
+          </div>
+
+          {passwordMessage && <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">{passwordMessage}</div>}
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <input
+              name="email"
+              value={passwordForm.email}
+              onChange={handlePasswordChange}
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+              placeholder="Account email"
+              required
+            />
+            <input
+              name="currentPassword"
+              type="password"
+              value={passwordForm.currentPassword}
+              onChange={handlePasswordChange}
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+              placeholder="Current password"
+              required
+            />
+            <input
+              name="newPassword"
+              type="password"
+              value={passwordForm.newPassword}
+              onChange={handlePasswordChange}
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+              placeholder="New password"
+              required
+            />
+            <input
+              name="confirmPassword"
+              type="password"
+              value={passwordForm.confirmPassword}
+              onChange={handlePasswordChange}
+              className="rounded-2xl border border-slate-200 px-4 py-3"
+              placeholder="Confirm new password"
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={passwordSaving} className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-slate-800 disabled:opacity-60">
+            <FaLock />
+            {passwordSaving ? 'Updating...' : 'Update Password'}
+          </button>
+        </form>
+      </div>
     </DashboardSectionPage>
   );
 }
