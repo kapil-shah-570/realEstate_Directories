@@ -70,7 +70,7 @@ import LatestListings from '../components/Sections/latestListings/LatestListings
 import BlogPreview from '../components/Sections/BlogPreview/BlogPreview';
 import ContactCTA from '../components/Sections/ContactCTA/ContactCTA';
 // import TeamSection from '../components/Sections/About/TeamSection/TeamSection';
-import TeamSection from '../components/Sections/teamSection /TeamSection';
+import TeamSection from '../components/Sections/teamSection/TeamSection';
 
 const HomePage = () => {
   return (
